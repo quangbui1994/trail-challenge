@@ -8,7 +8,6 @@ import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import TramIcon from '@mui/icons-material/Tram';
 import SubwayIcon from '@mui/icons-material/Subway';
 import DirectionsRailwayFilledIcon from '@mui/icons-material/DirectionsRailwayFilled';
-import moment from 'moment';
 
 const TimeSlot = ({ data: { mode, from, to, distance, duration } }) => {
     const steps = [
@@ -28,7 +27,7 @@ const TimeSlot = ({ data: { mode, from, to, distance, duration } }) => {
                             <StepLabel 
                                 sx={{ 
                                     '& .MuiStepLabel-iconContainer': {
-                                        transform: `${i == 1 ? 'scale(1.5)' : 'scale(.7)'}`
+                                        transform: `${i === 1 ? 'scale(1.5)' : 'scale(.7)'}`
                                     },
                                     '& .MuiStepIcon-text': {
                                         display: 'none'

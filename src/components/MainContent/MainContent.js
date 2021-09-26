@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
 import { GET_ITINERARY } from '../../graphql';
@@ -19,6 +19,11 @@ const MainContent = ({ updateItineraries, updateOrigin, updateDestination, origi
       setValue(newValue);
     };
 
+    /**
+     * Automatically fetchs the number of streets contain the value of input 
+     * and returns to the list which are the data of autocomplete
+     * @param {String} val The input that users entered
+     */
     const autoCompleteField = async (val) => {
         const result = await getAddressList(val);
         const streetData = result.map(result => {
@@ -36,6 +41,13 @@ const MainContent = ({ updateItineraries, updateOrigin, updateDestination, origi
         },
     });
 
+    /**
+     * Look up the place base on the value of input by address search service
+     * then return to the data which are then parsed to graph query
+     * @param {String} val The value of field which is blur
+     * @param {String} type The name of field input which is origin or destination
+     * @returns Set the modified data which are parsed into graph query function later
+     */
     const onBlurHandler = async (val, type) => {
         if (val) {
             const result = await fetchPlaceData(val);
@@ -50,10 +62,9 @@ const MainContent = ({ updateItineraries, updateOrigin, updateDestination, origi
 
     useEffect(() => {
         if (data) {
-            console.log(data);
             updateItineraries([...data.plan.itineraries]);
         }
-    }, [data]);
+    }, [data, updateItineraries]);
 
     return (
         <div style={{ width: '50%', paddingTop: '15%', display: 'flex', flexDirection: 'column', height: '100vh' }}>

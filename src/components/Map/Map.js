@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer, DirectionsService } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, DirectionsRenderer, DirectionsService } from '@react-google-maps/api';
 import { connect } from 'react-redux';
 import { useCallback, useState, useEffect } from 'react';
 
@@ -11,18 +11,23 @@ const containerStyle = {
 const Map = ({ origin, destination }) => {
     const [map, setMap] = useState(null);
     const [response, setResponse] = useState(null);
+
+    //Loading the Google Map script with API key
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY
     });
 
+    //Set the map variable after loading
     const onLoad = useCallback((map) => setMap(map), []);
 
+    //Remove map variable when map is unmounted
     const onUnmount = useCallback(function callback(map) {
         setMap(null)
     }, []);
 
-///////////Directions
+    //The callback function check the response from directions service 
+    //and conditionally load the directions render
     const directionsCallback = (response) => {
         if (response !== null) {
             if (response.status === 'OK') {
@@ -33,16 +38,23 @@ const Map = ({ origin, destination }) => {
         }
     }
     
-    const DirectionsServiceOption = useMemo(() => ({
-        destination: {lat: destination?.location.coordinates[1], lng: destination?.location.coordinates[0]},
-        origin: {lat: origin?.location.coordinates[1], lng: origin?.location.coordinates[0]},
-        travelMode: "TRANSIT",
-    }), [destination, origin]);
+    //Parse the origin and destination coordinates to the direction service
+    const DirectionsServiceOption = useMemo(() => {
+        return (
+            {
+                destination: {lat: destination?.location.coordinates[1], lng: destination?.location.coordinates[0]},
+                origin: {lat: origin?.location.coordinates[1], lng: origin?.location.coordinates[0]},
+                travelMode: "TRANSIT",
+            }
+        );
+    }, [destination, origin]);
 
+    //Rebound the map every single time origin or destination changed
+    //in order to make map focus and zoom in both of them
     useEffect(() => {
         if (map && (origin || destination)) {
             const bounds = new window.google.maps.LatLngBounds();
-            [origin, destination].map(marker => {
+            [origin, destination].forEach(marker => {
                 if (marker) {
                     bounds.extend({
                         lat: marker?.location.coordinates[1],
